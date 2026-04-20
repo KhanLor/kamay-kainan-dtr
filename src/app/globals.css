@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas: #f8f4ef;
+  --ink: #2a211a;
+  --line: #dcc9b4;
+}
+
+body {
+  color: var(--ink);
+  background: var(--canvas);
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .bg-canvas {
+    background-color: var(--canvas);
+  }
+
+  .text-ink {
+    color: var(--ink);
+  }
+
+  .border-line {
+    border-color: var(--line);
+  }
+}
