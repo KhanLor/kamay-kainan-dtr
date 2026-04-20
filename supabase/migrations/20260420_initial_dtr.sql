@@ -3,8 +3,19 @@
 
 create extension if not exists pgcrypto;
 
-create type public.app_role as enum ('employee', 'admin');
-create type public.attendance_status as enum ('pending', 'submitted', 'approved', 'rejected');
+do $$
+begin
+  create type public.app_role as enum ('employee', 'admin');
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  create type public.attendance_status as enum ('pending', 'submitted', 'approved', 'rejected');
+exception
+  when duplicate_object then null;
+end $$;
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -146,33 +157,39 @@ alter table public.profiles enable row level security;
 alter table public.attendance enable row level security;
 alter table public.attendance_audit_log enable row level security;
 
+drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"
 on public.profiles
 for select
 using (id = auth.uid());
 
+drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own"
 on public.profiles
 for update
 using (id = auth.uid())
 with check (id = auth.uid());
 
+drop policy if exists "attendance_select_own" on public.attendance;
 create policy "attendance_select_own"
 on public.attendance
 for select
 using (user_id = auth.uid());
 
+drop policy if exists "attendance_insert_own" on public.attendance;
 create policy "attendance_insert_own"
 on public.attendance
 for insert
 with check (user_id = auth.uid());
 
+drop policy if exists "attendance_update_own_pending" on public.attendance;
 create policy "attendance_update_own_pending"
 on public.attendance
 for update
 using (user_id = auth.uid() and status = 'pending')
 with check (user_id = auth.uid() and status in ('pending', 'submitted'));
 
+drop policy if exists "attendance_admin_all" on public.attendance;
 create policy "attendance_admin_all"
 on public.attendance
 for all
@@ -189,6 +206,7 @@ with check (
   )
 );
 
+drop policy if exists "attendance_audit_admin_only" on public.attendance_audit_log;
 create policy "attendance_audit_admin_only"
 on public.attendance_audit_log
 for select
