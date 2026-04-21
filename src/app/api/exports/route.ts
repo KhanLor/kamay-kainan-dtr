@@ -10,6 +10,10 @@ export async function GET(request: Request) {
   const date = requestUrl.searchParams.get("date") ?? format(new Date(), "yyyy-MM-dd");
 
   const supabase = await createClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase is not configured" }, { status: 500 });
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();

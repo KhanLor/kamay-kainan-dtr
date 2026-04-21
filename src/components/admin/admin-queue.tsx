@@ -3,6 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function AdminQueue() {
   const supabase = await createClient();
+  if (!supabase) {
+    return (
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="text-lg font-bold text-slate-900">Admin Approval Queue</h2>
+        <p className="mb-4 text-sm text-slate-600">Recent submitted records for review and approval</p>
+        <p className="text-sm font-medium text-red-600">Unable to load queue. Supabase is not configured.</p>
+      </section>
+    );
+  }
 
   const { data } = await supabase
     .from("attendance")

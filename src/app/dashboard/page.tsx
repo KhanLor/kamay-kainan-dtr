@@ -32,6 +32,9 @@ function createDefaultRecord(userId: string): Omit<AttendanceRecord, "id" | "cre
 
 export default async function DashboardPage() {
   const supabase = await createClient();
+  if (!supabase) {
+    redirect("/");
+  }
 
   const {
     data: { user },
@@ -58,13 +61,21 @@ export default async function DashboardPage() {
     .maybeSingle();
 
   if (!todayRecord) {
-    const { data: created } = await supabase
+    const { data: created, error: createError } = await supabase
       .from("attendance")
       .insert(createDefaultRecord(user.id))
       .select()
       .single();
 
+    if (createError || !created) {
+      redirect("/");
+    }
+
     todayRecord = created;
+  }
+
+  if (!todayRecord) {
+    redirect("/");
   }
 
   const record = todayRecord as AttendanceRecord;
