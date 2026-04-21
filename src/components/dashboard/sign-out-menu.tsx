@@ -14,6 +14,10 @@ export function SignOutMenu({ fullName }: Props) {
   const [open, setOpen] = useState(false);
 
   async function onSignOut() {
+    if (!supabase) {
+      return;
+    }
+
     const shouldSignOut = window.confirm("Are you sure you want to sign out?");
     if (!shouldSignOut) {
       return;

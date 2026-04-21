@@ -47,6 +47,11 @@ export function DtrSequenceCard({ record }: Props) {
   const [pending, startTransition] = useTransition();
 
   async function applyStep(step: StepKey) {
+    if (!supabase) {
+      setError("Supabase is not configured. Please check environment variables.");
+      return;
+    }
+
     setNotice(null);
     setError(null);
 
@@ -100,6 +105,11 @@ export function DtrSequenceCard({ record }: Props) {
   }
 
   async function submitRecord() {
+    if (!supabase) {
+      setError("Supabase is not configured. Please check environment variables.");
+      return;
+    }
+
     setNotice(null);
     setError(null);
 

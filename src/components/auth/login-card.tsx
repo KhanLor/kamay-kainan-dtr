@@ -19,6 +19,11 @@ export function LoginCard() {
   const [error, setError] = useState<string | null>(null);
 
   async function onGoogleSignIn() {
+    if (!supabase) {
+      setError("Supabase is not configured. Please check environment variables.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setMessage(null);
@@ -37,6 +42,12 @@ export function LoginCard() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!supabase) {
+      setError("Supabase is not configured. Please check environment variables.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setMessage(null);
@@ -86,7 +97,7 @@ export function LoginCard() {
       <button
         type="button"
         onClick={onGoogleSignIn}
-        disabled={loading}
+        disabled={loading || !supabase}
         className="mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-slate-900 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60"
       >
         Sign in with Google
@@ -138,7 +149,7 @@ export function LoginCard() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !supabase}
           className="h-11 w-full rounded-xl bg-amber-500 text-sm font-semibold text-slate-900 transition hover:bg-amber-400 disabled:opacity-60"
         >
           {mode === "signin" ? "Sign in with Email" : "Sign up with Email"}
